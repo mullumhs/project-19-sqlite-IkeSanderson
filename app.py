@@ -26,19 +26,30 @@ def create_table(conn, cursor):
     )              
 
      ''')
+    conn.commit()
     
 
 
 
 def add_movie(conn, cursor, title, director, year, rating):
 
-    cursor.execute('''
+    #cursor.execute('''
+
+    #INSERT INTO movies (title, director, year, rating)
+
+    #VALUES (?, ?, ?, ?)
+
+   # ''', (title, director, year, rating))
+    #conn.commit()
+    cursor.execute(f'''
 
     INSERT INTO movies (title, director, year, rating)
+    
+    VALUES ({title}, {director}, {year}, {rating})
 
-    VALUES (?, ?, ?, ?)
 
-    ''', (title, director, year, rating))
+    ''',)
+    conn.commit()
 
 
 
@@ -54,6 +65,7 @@ def display_all_movies(conn, cursor):
     for movie in all_movies:
 
         print(movie)
+    conn.commit()
 
 
 
@@ -63,24 +75,24 @@ def update_movie_rating(conn, cursor, title, new_rating):
 
     UPDATE movies
 
-    SET rating = new_raring
+    SET rating = ?
 
-    WHERE title = title
+    WHERE title = ?
 
-    ''')
+    ''',(new_rating, title))
+    conn.commit()
 
 
 
 def delete_movie(conn, cursor, title):
-
-    cursor.execute('DELETE FROM movies WHERE title = title')
+    cursor.execute('DELETE FROM movies WHERE title = ?',(title,))
+    conn.commit()
 
 
 
 def find_movies_by_director(conn, cursor, director):
 
-    cursor.execute('SELECT title, year FROM movies WHERE director = director')
-
+    cursor.execute('SELECT title, year FROM movies WHERE director = ?',(director,))
     recent_movies = cursor.fetchall()
 
     print(f"\nMovies by {director}:")
@@ -88,6 +100,7 @@ def find_movies_by_director(conn, cursor, director):
     for movie in recent_movies:
 
         print(f"{movie}")
+    conn.commit()
 
 
 
@@ -97,7 +110,7 @@ def main():
     cursor = conn.cursor()
     if conn is not None:
 
-        create_table(conn)
+        create_table(conn, cursor)
 
         
 
@@ -141,7 +154,7 @@ def main():
 
             elif choice == '2':
 
-                display_all_movies(conn)
+                display_all_movies(conn, cursor)
 
             
 
@@ -171,7 +184,7 @@ def main():
 
                 director = input("Enter director name: ")
 
-                find_movies_by_director(conn, director)
+                find_movies_by_director(conn, cursor, director)
 
             
 
